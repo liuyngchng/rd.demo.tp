@@ -2,8 +2,8 @@ CC = gcc
 CFLAGS = -g
 LFLAGS = 
 OBJS = scheduler.o
-all : scheduler
-scheduler : $(OBJS)
+all : _scheduler
+_scheduler : $(OBJS)
 	$(CC) $^ -o $@ $(LFLAGS)
 	
 %*.o:%*.c
@@ -11,5 +11,5 @@ scheduler : $(OBJS)
 
 .PHNOY: clean
 clean:
-	rm *.o scheduler
+	rm -f *.o _scheduler
 
