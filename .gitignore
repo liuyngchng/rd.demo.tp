@@ -23,3 +23,6 @@ tp_o/*
 **/.libs
 **/.deps
 **/*.cache
+**/*.la
+**/*.lo
+_*

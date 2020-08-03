@@ -43,7 +43,7 @@ _log4c:${L_BUILD}/log4c/*.o
 _sqlite:${SQLITE}/sqlite3.o
 	cp ${SQLITE}/sqlite3.o ${LIB}
 	${C_BIN}
-	cp ${SQLITE}/sqlite3 ${BIN}
+	cp ${SQLITE}/_sqlite3 ${BIN}/sqlite3
 	touch _sqlite
 libagent.a:agent.o db.o common.o 
 	ar crs libagent.a agent.o common.o db.o ${STACK}/*.o 
