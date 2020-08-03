@@ -42,7 +42,7 @@ char *get_port_str(std::string ip_port);
 /**
  * get local ip addr from network interface card.
  */
-void get_local_ip(char *nic, char *ip);
+int get_local_ip(char *nic, char *ip);
 
 /**
  * split a string in 'source' by separator 'search', save in 'result'.

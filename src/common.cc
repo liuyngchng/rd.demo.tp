@@ -17,8 +17,6 @@
 #include "common.h"
 #include <iomanip>
 
-using namespace std;
-
 /**
  * get filename from file full path
 **/
@@ -55,7 +53,7 @@ int get_file_size(const char path[])
 {
 	FILE* fp;
 	if ((fp = fopen(path,"rb")) == NULL) {
-		cout << "cannot open file: " << path << endl;
+		printf("can't open file: %s, at %d of %s\n", path, __LINE__, __FILE__);
 		return -1;
 	}
 	fseek(fp, 0, SEEK_END);
@@ -81,7 +79,6 @@ void itoa (int n, char s[])
 		s[i++] = '-';
 	s[i] ='\0';
 	int l = strlen(s);
-	//printf("itoa_s=%s, l_s=%d", s, l);
 	for(int j=0; j < l/2; j++) {
 		char t = s[j];
 		s[j] = s[l-1-j];
@@ -106,7 +103,6 @@ char *get_ip(string ip_port)
 	return ip;
 }
 
-
 char *get_port_str(string ip_port)
 {
 	char c = ':';
@@ -122,7 +118,7 @@ int get_port(string ip_port)
 	return atoi(get_port_str(ip_port));
 }
 
-void get_local_ip(char *nic, char *ip)
+int get_local_ip(char *nic, char *ip)
 {
 	int i = 0;
 	int sockfd;
@@ -133,8 +129,8 @@ void get_local_ip(char *nic, char *ip)
 	ifc.ifc_len = 1024;
 	ifc.ifc_buf = buf;
 	if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) <0) {
-		printf("socket error\n");
-		return;
+		printf("socket error, at %d of %s\n", __LINE__, __FILE__);
+		return -1;
 	}
 	ioctl(sockfd, SIOCGIFCONF, &ifc);
 	ifr = (struct ifreq*)buf;
@@ -146,6 +142,7 @@ void get_local_ip(char *nic, char *ip)
 			ifr = ifr + 1;
 		}
 	}
+	return 0;
 }
 
 int split_str(char *source, char *search, char result[][32])
@@ -165,4 +162,3 @@ int split_str(char *source, char *search, char result[][32])
     }
     return i;
 }
-

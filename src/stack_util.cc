@@ -18,8 +18,6 @@
 #include "stack_util.h"
 #include <iomanip>
 
-using namespace std;
-
 /**
  * send buf content limited by t_len to i_sockfd. 
  **/
@@ -77,8 +75,8 @@ int save_f(const char path[], const int size, UDTSOCKET sockfd)
 	while(sum_l < size) {
 		rd_l = UDT::recv(sockfd, buf, sizeof(buf), 0);
 		if (rd_l == UDT::ERROR) {
-			cout << "recv err:" << UDT::getlasterror().getErrorMessage() << endl;
-			break;
+			printf("recv err:%s, at %d of %s\n", UDT::getlasterror().getErrorMessage(), __LINE__, __FILE__);
+			return -1;
 		}
 		sum_l += rd_l;
 		if (rd_l > 0)
