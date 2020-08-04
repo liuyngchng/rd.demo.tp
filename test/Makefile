@@ -1,9 +1,12 @@
-all: _md5test _file_path_test _timestamp_test _db_test
+all: _md5test _file_path_test _timestamp_test _db_test _sqlite_test
 
 CC=g++
 CFLAGS=-g -Wall
 BUILD_CFLAGS= -I../lib -I../src -L../lib
+SQLITE=../lib/sqlite3.o
 
+_sqlite_test:sqlite_test.o ${SQLITE}
+	$(CC) $(BUILD_CFLAGS) -o _sqlite_test sqlite_test.o ${SQLITE} -ldl -lpthread
 _db_test:db_test.o db.o common.o
 	$(CC) $(BUILD_CFLAGS) -o _db_test db_test.o db.o common.o ../log4c/obj/*.o ../lib/sqlite3.o -ldl -lpthread
 
@@ -27,6 +30,8 @@ db.o:
 	$(CC) $(BUILD_CFLAGS) $(CFLAGS) -o db.o -c ../src/db.cc
 timestamp.o:
 	$(CC) $(BUILD_CFLAGS) $(CFLAGS)  -o timestamp.o -c ../src/timestamp.cc
+sqlite_test.o:
+	$(CC) $(BUILD_CFLAGS) $(CFLAGS)  -o sqlite_test.o -c sqlite_test.cc
 clean:
 	rm -fr _* *.o *.a
 
