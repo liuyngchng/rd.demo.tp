@@ -9,14 +9,12 @@ BIN=../bin
 LIB=../lib
 LOG4C=../log4c
 L_DIR=${LOG4C}
-L_OBJ=${L_DIR}/obj
 L_BUILD=${L_DIR}/build/src
 SQLITE=${DIR}/../sqlite3
 STACK=../stack
 
 
 C_BIN=test -d ${BIN} || mkdir -p ${BIN}
-C_L_OBJ=test -d ${L_OBJ} || mkdir -p ${L_OBJ}
 
 OBJS=common.o stack_util.o agent.o ping.o db.o md5.o timestamp.o scheduler.o
 
@@ -29,23 +27,16 @@ _client:client.o ${OBJS} _stack _log4c _sqlite
 	$(CC) $(INC_FLAG) ${L_FLAG} $(CFLAGS) -o _client client.o ${OBJS} -llog4c -lsqlite3 -ltp -lpthread -ldl
 	cp _client ${BIN}/client
 _stack:${LIB}/libtp.a
-	test -e ${LIB}/libtp.a
+	test -e $<
 	touch _stack
-_log4c:${L_BUILD}/log4c/*.o
-	${C_L_OBJ}
-	#cp ${LOG4C}/src/log4c.h ../lib
-	#cp ${LOG4C}/src/log4c/*.h ../lib/log4c
-	cp ${L_BUILD}/log4c/*.o  ${L_OBJ}
-	cp ${L_BUILD}/sd/*.o  ${L_OBJ}
+_log4c:${LIB}/liblog4c.a
+	test -e $<
 	touch _log4c
-	cd ${DIR}
-_sqlite:${SQLITE}/sqlite3.o
-	${C_BIN}
-	cp ${SQLITE}/sqlite3 ${BIN}
+_sqlite:${LIB}/libsqlite3.a
+	test -e $<	
 	touch _sqlite
 libagent.a:agent.o db.o common.o 
 	ar crs libagent.a agent.o common.o db.o ${STACK}/*.o 
-	cp libagent.a ${LIB}
 %.o:%.cc %.h 
 	$(CC) $(CFLAGS) ${INC_FLAG} $< -c -o $@
 clean:
