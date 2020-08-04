@@ -1,7 +1,9 @@
-#include "sqlite3.h" 
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>  
+#include <list>
+#include "sqlite3.h" 
+#include "db.h"
 #pragma comment(so, "sqlite3.o")  
 typedef struct per
 {
@@ -30,7 +32,6 @@ int main()
     sqlite3_stmt *pstmt;  
     const char *pzTail;  
     const unsigned char *pTmp;
-    int age;
     int nCol;
     // 打开数据库连接   
     int nRet = sqlite3_open("./test.db", &pdb);  
@@ -86,20 +87,28 @@ int main()
     sqlite3_finalize(pstmt);
     // 使用sqlite3_prepare_v2(), sqlite3_column_...() 查询数据
     printf("====== query by sqlite3_prepare_v2()======\n");
-    sql = "SELECT name,age,sex FROM person;";
+    sql = "SELECT id, app_id, name, size, md5, create_time FROM file_info;";
     nRet = sqlite3_prepare_v2(pdb, sql, strlen(sql), &pstmt, &pzTail);
     assert(SQLITE_OK == nRet); 
+	list<struct file_rcd> file_list;
     while(sqlite3_step(pstmt) == SQLITE_ROW)
     {
+		struct file_rcd file;
         nCol = 0;
-        pTmp = sqlite3_column_text(pstmt, nCol++);
-        printf("%s|", pTmp);
-        age = sqlite3_column_int(pstmt, nCol++);
-        printf("%d|", age);
+        int id = sqlite3_column_int(pstmt, nCol++);
+        printf("%d|", id);
+        int app_id = sqlite3_column_int(pstmt, nCol++);
+        printf("%d|", app_id);
         pTmp = sqlite3_column_text(pstmt, nCol++);
         printf("%s\n", pTmp);
+		file.id = id;
+		file.app_id = app_id;
+		strcpy(file.name, (char *)(pTmp));
+		file_list.push_back(file);
     }
     sqlite3_finalize(pstmt);
     sqlite3_close(pdb);  
+	for (list<file_rcd>::iterator it = file_list.begin(); it != file_list.end(); ++it)
+		cout << it->name << endl;;
     return 0; 
 }
