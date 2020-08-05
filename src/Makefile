@@ -8,36 +8,37 @@ DIR= $(shell pwd)
 BIN=../bin
 LIB=../lib
 LOG4C=../log4c
-L_DIR=${LOG4C}
-L_BUILD=${L_DIR}/build/src
-SQLITE=${DIR}/../sqlite3
+L_DIR=$(LOG4C)
+L_LIB=$(L_DIR)/build/src/log4c/.libs
+SQLITE=$(DIR)/../sqlite3
 STACK=../stack
 
 
-C_BIN=test -d ${BIN} || mkdir -p ${BIN}
+C_BIN=test -d $(BIN) || mkdir -p $(BIN)
 
 OBJS=common.o stack_util.o agent.o ping.o db.o md5.o timestamp.o scheduler.o
 
-_server:server.o ${OBJS} _stack _log4c _sqlite
-	${C_BIN}
-	$(CC) $(INC_FLAG) ${L_FLAG} $(CFLAGS) -o _server server.o ${OBJS} -llog4c -lsqlite3 -ltp -lpthread -ldl 
-	cp _server ${BIN}/server
-_client:client.o ${OBJS} _stack _log4c _sqlite
-	${C_BIN}
-	$(CC) $(INC_FLAG) ${L_FLAG} $(CFLAGS) -o _client client.o ${OBJS} -llog4c -lsqlite3 -ltp -lpthread -ldl
-	cp _client ${BIN}/client
-_stack:${LIB}/libtp.a
+_server:server.o $(OBJS) _stack _log4c _sqlite
+	$(C_BIN)
+	$(CC) $(INC_FLAG) $(L_FLAG) $(CFLAGS) -o _server $< $(OBJS) -llog4c -lsqlite3 -ltp -lpthread -ldl 
+	cp _server $(BIN)/server
+_client:client.o $(OBJS) _stack _log4c _sqlite
+	$(C_BIN)
+	$(CC) $(INC_FLAG) $(L_FLAG) $(CFLAGS) -o _client $< $(OBJS) -llog4c -lsqlite3 -ltp -lpthread -ldl
+	cp _client $(BIN)/client
+_stack:$(LIB)/libtp.a
 	test -e $<
 	touch _stack
-_log4c:${LIB}/liblog4c.a
+_log4c:$(L_LIB)/liblog4c.a
 	test -e $<
+	cp $< $(LIB)
 	touch _log4c
-_sqlite:${LIB}/libsqlite3.a
+_sqlite:$(LIB)/libsqlite3.a
 	test -e $<	
 	touch _sqlite
-libagent.a:agent.o db.o common.o 
-	ar crs libagent.a agent.o common.o db.o ${STACK}/*.o 
+libagent.a:agent.o db.o common.o $(STACK)/*.o 
+	ar crs libagent.a $^ 
 %.o:%.cc %.h 
-	$(CC) $(CFLAGS) ${INC_FLAG} $< -c -o $@
+	$(CC) $(CFLAGS) $(INC_FLAG) $< -c -o $@
 clean:
-	rm -fr _* *.a *.o ${BIN} 
+	rm -fr _* *.a *.o $(BIN)/server $(BIN)/client
