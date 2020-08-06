@@ -50,6 +50,7 @@ SUBDIRS = config src ${DOC_SUBDIR} ${TEST_SUBDIR} examples
 DIST_SUBDIRS = config src doc tests examples
 ```
 中的 doc tests exampls 删除
+```
 mkdir build
 cd build
 ../configure --without-expat
@@ -112,3 +113,16 @@ int sqlite3_exec(
   char **errmsg                 /* Error msg written here */
 );
 ```
+
+# 4. LT code 
+
+LT codes  
+Conference Paper in Foundations of Computer Science, 1975., 16th Annual Symposium on · January 2002  
+DOI: 10.1109/SFCS.2002.1181950 ·  
+Source: DBLP
+
+Author: Michael Luby , from Digital Fountain, Inc.   
+luby@digitalfountain.com  
+卢比变换码（LT码，英文：Luby transform codes, LT codes）  
+是第一个最接近完善的抹除码(erasure correcting codes)的实用涌泉码(fountain codes），  
+由Michael Luby在1998年发明并于2002年发表。
