@@ -1,6 +1,15 @@
 //LT function begin
-#include "LT_function.h"
-#include "error.h"
+//#include <sys/types.h>
+#include<stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <net/if.h>
+#include "lt_function.h"
+#include <errno.h>
 void show_fun()
 {
 	printf("OK");
@@ -99,7 +108,7 @@ int encodeAndSend(char* send_data,int len,double redundancy,int linkSocket,struc
 			memcpy(temp_sendBuf+blocksize_sessionNum+blocksize_packetNum+blocksize_data_Len,temp_H,packetNum*sizeof(int));
 	
 			
-			byteswritten = isendto(linkSocket, temp_sendBuf, length, 0,
+			byteswritten = sendto(linkSocket, temp_sendBuf, length, 0,
 				(struct sockaddr *) destAddr,
 				sizeof(struct sockaddr));
 			if (byteswritten < 0)

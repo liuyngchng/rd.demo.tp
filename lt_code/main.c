@@ -1,7 +1,7 @@
 
 #include<stdio.h>
 
-#include "LT_function.h"
+#include "lt_function.h"
 
 
 char* send(char* arr,int len)

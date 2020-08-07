@@ -1,9 +1,13 @@
-all:
+all:main
 
+main:main.o lt_function.o
+	gcc -o main -I. $^ -lm
 
-LT_code.o:LT_code.cpp
-	gcc -c LT_code.cpp
-
-
+lt_code.o:lt_code.cpp
+	g++ -c $<
+lt_function.o:lt_function.c
+	gcc -c $< 
+main.o:main.c
+	gcc -c $<
 clean:
-	rm -fr *.o
+	rm -fr *.o main
