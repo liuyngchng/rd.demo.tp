@@ -1,15 +1,8 @@
 //LT function begin
-//#include <sys/types.h>
-#include<stdio.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <stdlib.h>
 #include <errno.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <net/if.h>
 #include "lt_function.h"
-#include <errno.h>
 void show_fun()
 {
 	printf("OK");
