@@ -1,6 +1,5 @@
 //LT function begin
 #include <errno.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
 #include "lt_function.h"
 void show_fun()
