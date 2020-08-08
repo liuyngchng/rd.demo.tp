@@ -24,6 +24,8 @@ int main()
 		b[i] = 'b';
 	}
 	LT_XOR_char(a,b,2,a);
+	printf("r1=%s\n", a);
 	LT_XOR_char(a,b,2,a);
+	printf("r2=%s\n",a);
 	return 0;
 }
