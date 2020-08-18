@@ -27,11 +27,26 @@ using namespace std;
 
 void get_file_name(const char path[], char name[]);
 
+//perf monitor
+static void* monitor(void* s);
+
 static log4c_category_t* mycat = NULL;
 
 static int _PORT_;
 
 static bool ping_flag;					// 0: no ping , 1: ping peer
+
+static char *peer_ip;
+
+static bool open_data_flow = false;
+
+static double mbpsSendRate = 0.0L;
+
+static double mbpsBandwidth;
+
+static double msRTT;
+
+static double pktSntLossRate;
 
 static void log_init()
 {
@@ -172,6 +187,7 @@ int rcv_f(UDTSOCKET fd)
 	fstream ofs(p, ios::out | ios::binary | ios::trunc);
 	int64_t recvsize;
 	int64_t offset = 0;
+	open_data_flow = true;
 	if (UDT::ERROR == (recvsize = UDT::recvfile(fd, ofs, offset, i_f_size))) {
 		log4c_category_log(mycat, LOG4C_PRIORITY_ERROR,
 			"rcv err, msg=%s, at %d in %s ",
@@ -216,6 +232,7 @@ int snd_f(UDTSOCKET fd)
 	int64_t size = ifs.tellg();
 	ifs.seekg(0, ios::beg);
 	int64_t offset = 0;
+	open_data_flow = true;
 	if (UDT::ERROR == UDT::sendfile(fd, ifs, offset, size)) {
 		log4c_category_log(mycat, LOG4C_PRIORITY_ERROR,
 			"snd err, msg=%s, at %d in %s ",
@@ -375,11 +392,62 @@ int main(int argc, char** argv){
 			"conn from %s:%d, at %d in %s ",
 			inet_ntoa(csock.sin_addr), ntohs(csock.sin_port), 
 			__LINE__, __FILE__);
+		peer_ip = inet_ntoa(csock.sin_addr);
 		pthread_t t;
 		pthread_create(&t, NULL, &run, &acceptfd);
 		pthread_detach(t);
+		
+		pthread_t t1;
+    	pthread_create(&t1, NULL, monitor, &acceptfd);
 	}
 	UDT::close(sockfd);
 	return 0;
+}
+
+static void* monitor(void* s)
+{
+    UDTSOCKET u = *(UDTSOCKET*)s;
+    UDT::TRACEINFO perf;
+    while (true) {
+        sleep(1);
+        if(!open_data_flow)
+            continue;
+        if (UDT::ERROR == UDT::perfmon(u, &perf)) {
+            log4c_category_log(mycat, LOG4C_PRIORITY_DEBUG,
+                "perfMon error,%s, at %d in %s ",
+                UDT::getlasterror().getErrorMessage(), __LINE__, __FILE__);
+            break;
+        }
+        log4c_category_log(mycat, LOG4C_PRIORITY_DEBUG,
+            "sndRate=%lfMbps,bandwidth=%lfMbps, RTT=%lfms,"
+            "pktSent=%ld,pktSndLoss=%d, at %d in %s",
+            perf.mbpsSendRate, perf.mbpsBandwidth, perf.msRTT,
+            perf.pktSent, perf.pktSndLoss, __LINE__, __FILE__);
+        if (perf.mbpsSendRate > mbpsSendRate)
+            mbpsSendRate = perf.mbpsSendRate;
+        if (perf.mbpsBandwidth > mbpsBandwidth)
+            mbpsBandwidth = perf.mbpsBandwidth;
+        if (perf.msRTT > msRTT)
+            msRTT = perf.msRTT;
+        if (perf.pktSent > 0 && (perf.pktSndLoss *100)/perf.pktSent > pktSntLossRate)
+            pktSntLossRate = (perf.pktSndLoss *100)/perf.pktSent;
+        char ip[32] = {0};
+        char nic[16] = "enp3s0";
+        get_local_ip(nic, ip);
+        log4c_category_log(mycat, LOG4C_PRIORITY_DEBUG,
+            "from=%s, to=%s, r=%lfMbps,bw=%lfMbps, rtt=%lfms, pktls=%lf%%, at %d in %s",
+            ip, peer_ip, mbpsSendRate, mbpsBandwidth, msRTT, pktSntLossRate, __LINE__,  __FILE__ );
+        struct topo_rcd topo;
+        topo.source = ip;
+        topo.target = peer_ip;
+        topo.loss = pktSntLossRate;
+        topo.is_connected = 1;
+        topo.available_bw = mbpsSendRate;
+        topo.capacity_bw = mbpsBandwidth;
+        topo.latency = msRTT;
+        topo.type= 1;
+        save_topo_info(topo);
+   }
+   return NULL;
 }
 

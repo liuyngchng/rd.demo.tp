@@ -19,8 +19,6 @@
 #include "log4c.h"
 #include "db.h"
 
-//#define _PORT_	9000				//server port
-//#define _IP_	"127.0.0.1"				//server IP
 #define _PATH_	"/data/cli/"			//client download defalt path
 
 using namespace std;
@@ -39,12 +37,12 @@ int get_file_md5(const char *path, char *md5);
 void byte_to_hexstr( const unsigned char* source, char* dest, int source_len);
 
 //perf monitor
-void* monitor(void* s);
+static void* monitor(void* s);
 
 // init socket.
 UDTSOCKET init(char *ip, int& port);
 
-static char *server_ip;
+static char *peer_ip;
 
 static log4c_category_t* mycat = NULL;
 
@@ -202,7 +200,7 @@ int get_file(char* file_name, char *ip, int& port)
 UDTSOCKET init(char *ip, int& port)
 {
 	log_init();
-	server_ip = ip;
+	peer_ip = ip;
 	struct sockaddr_in sock_addr;
 	sock_addr.sin_family = AF_INET;
 	sock_addr.sin_port = htons(port);
@@ -221,8 +219,8 @@ UDTSOCKET init(char *ip, int& port)
        		__LINE__, __FILE__);
 		return -1;
 	}
-	pthread_t t;
-	pthread_create(&t, NULL, monitor, &sockfd);
+	//pthread_t t;
+	//pthread_create(&t, NULL, monitor, &sockfd);
 //	pthread_detach(t);
 	return sockfd;
 }
@@ -277,7 +275,7 @@ int get_file_md5(const char *path, char *md5)
 	return 0;
 }
 
-void* monitor(void* s)
+static void* monitor(void* s)
 {
 	UDTSOCKET u = *(UDTSOCKET*)s;
    	UDT::TRACEINFO perf;
@@ -309,10 +307,10 @@ void* monitor(void* s)
 		get_local_ip(nic, ip);
 		log4c_category_log(mycat, LOG4C_PRIORITY_DEBUG,
            	"from=%s, to=%s, r=%lfMbps,bw=%lfMbps, rtt=%lfms, pktls=%lf%%, at %d in %s",
-         	ip, server_ip, mbpsSendRate, mbpsBandwidth, msRTT, pktSntLossRate, __LINE__,  __FILE__ );
+         	ip, peer_ip, mbpsSendRate, mbpsBandwidth, msRTT, pktSntLossRate, __LINE__,  __FILE__ );
 		struct topo_rcd topo;
 		topo.source = ip;
-		topo.target = server_ip;
+		topo.target = peer_ip;
 		topo.loss = pktSntLossRate;
 		topo.is_connected = 1;
 		topo.available_bw = mbpsSendRate;
