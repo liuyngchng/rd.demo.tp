@@ -219,8 +219,8 @@ UDTSOCKET init(char *ip, int& port)
        		__LINE__, __FILE__);
 		return -1;
 	}
-	//pthread_t t;
-	//pthread_create(&t, NULL, monitor, &sockfd);
+	pthread_t t;
+	pthread_create(&t, NULL, monitor, &sockfd);
 //	pthread_detach(t);
 	return sockfd;
 }
