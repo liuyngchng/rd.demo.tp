@@ -131,3 +131,6 @@ luby@digitalfountain.com
 ```
 https://blog.csdn.net/cddchina/article/details/80733303?utm_medium=distribute.pc_relevant_bbs_down.none-task--2~all~sobaiduend~default-1.nonecase&depth_1-utm_source=distribute.pc_relevant_bbs_down.none-task--2~all~sobaiduend~default-1.nonecase
 ```
+
+# 6. SOCI
+https://www.jianshu.com/p/66ac4e90c602
