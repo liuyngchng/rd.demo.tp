@@ -133,4 +133,7 @@ https://blog.csdn.net/cddchina/article/details/80733303?utm_medium=distribute.pc
 ```
 
 # 6. SOCI
+```
+http://www.cppcns.com/shujuku/mysql/124269.html
 https://www.jianshu.com/p/66ac4e90c602
+```
