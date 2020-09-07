@@ -1,4 +1,6 @@
 #include "common.h"
+#include <stdio.h>
+
 int main()
 {
 	char a[] ="/data/t/bc/d/abc.txt";
