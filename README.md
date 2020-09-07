@@ -106,7 +106,7 @@ sqlitebrowser - GUI editor for SQLite databases
 
 ```
 int sqlite3_exec(
-  sqlite3*,                     /* An open database */
+  sqlite3\*,                     /* An open database */
   const char *sql,              /* SQL to be executed */
   sqlite_callback,              /* Callback function */
   void *,                       /* 1st argument to callback function */
@@ -126,3 +126,14 @@ luby@digitalfountain.com
 卢比变换码（LT码，英文：Luby transform codes, LT codes）  
 是第一个最接近完善的抹除码(erasure correcting codes)的实用涌泉码(fountain codes），  
 由Michael Luby在1998年发明并于2002年发表。
+
+#5. dm db
+```
+https://blog.csdn.net/cddchina/article/details/80733303?utm_medium=distribute.pc_relevant_bbs_down.none-task--2~all~sobaiduend~default-1.nonecase&depth_1-utm_source=distribute.pc_relevant_bbs_down.none-task--2~all~sobaiduend~default-1.nonecase
+```
+
+# 6. SOCI
+```
+http://www.cppcns.com/shujuku/mysql/124269.html
+https://www.jianshu.com/p/66ac4e90c602
+```
