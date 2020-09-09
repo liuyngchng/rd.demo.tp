@@ -34,7 +34,7 @@ int main()
 					printf("\n");
 				}
 				if (mysql_errno(conn_ptr)) {
-					fprintf(stderr, "Retrive error:s\n", mysql_error(conn_ptr));				 
+					fprintf(stderr, "Retrive error:%s\n", mysql_error(conn_ptr));				 
 				}
 			}
 			mysql_free_result(res_ptr);
