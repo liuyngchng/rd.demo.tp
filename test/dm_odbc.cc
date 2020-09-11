@@ -25,23 +25,28 @@ int main(void)
 	SQLSetEnvAttr(henv, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, SQL_IS_INTEGER);
 	/* 申请一个连接句柄*/
 	SQLAllocHandle(SQL_HANDLE_DBC, henv, &hdbc);
-	SQLConnect(hdbc, (SQLCHAR *)"DM", SQL_NTS, (SQLCHAR *)"SYSDBA", SQL_NTS, (SQLCHAR*)"SYSDBA", SQL_NTS);
+	printf("hdbc=%p\n", hdbc);
+	int ret = SQLConnect(hdbc, (SQLCHAR *)"DM", SQL_NTS, (SQLCHAR *)"SYSDBA", SQL_NTS, (SQLCHAR*)"SYSDBA", SQL_NTS);
+	printf("connect_ret=%d\n", ret);
 	/* 申请一个语句句柄*/
-	SQLAllocHandle(SQL_HANDLE_STMT, hdbc, &hsmt);
+	ret = SQLAllocHandle(SQL_HANDLE_STMT, hdbc, &hsmt);
+	printf("hsmt=%p\n",hsmt);
 	/* 立即执行查询人员信息表的语句*/
-	SQLExecDirect(hsmt, (SQLCHAR *)"SELECT * FROM sysdba.t;", SQL_NTS);
+	ret = SQLExecDirect(hsmt, (SQLCHAR *)"SELECT * FROM sysdba.t;", SQL_NTS);
+	printf("sql_exec_ret=%d\n", ret);
 	/* 绑定数据缓冲区*/
-	SQLBindCol(hsmt, 1, SQL_C_CHAR, szpersonid, sizeof(szpersonid), &cbpersonid);
+	SQLBindCol(hsmt, 1, SQL_C_SLONG, &cbpersonid, sizeof(int), &cbname);
 	SQLBindCol(hsmt, 2, SQL_C_CHAR, szname, sizeof(szname), &cbname);
 	SQLBindCol(hsmt, 3, SQL_C_CHAR, szphone, sizeof(szphone), &cbphone);
 	/* 取得数据并且打印数据 */
 	printf("人员编号 人员姓名 联系电话\n");
-	for (;;) {
+//	for (;;) {
 		sret = SQLFetchScroll(hsmt, SQL_FETCH_NEXT, 0);
-		if (sret == SQL_NO_DATA_FOUND)
-			break;
-		printf("%s %s %s\n", szpersonid, szname, szphone);
-	}
+		printf("sret=%d\n",sret);
+//		if (sret == SQL_NO_DATA_FOUND)
+//			break;
+		printf("%ld %s %s\n", cbpersonid, szname, szphone);
+//	}
 	/* 释放语句句柄 */
 	SQLFreeHandle(SQL_HANDLE_STMT, hsmt);
 	/* 断开与数据源之间的连接*/

@@ -31,8 +31,8 @@ md5test.o:md5test.cc
 	$(CC) $(BUILD_CFLAGS) $(CFLAGS) -o $@ -c $^
 db_test.o:db_test.cc
 	$(CC) $(BUILD_CFLAGS) $(CFLAGS) -o $@ -c $<
-dm_odbc:dm_odbc.cc
-	$(CC)  -L/usr/lib -lodbc -c $^
+dm_odbc.o:dm_odbc.cc
+	$(CC) $(CFLAGS)  -L/usr/lib -lodbc -c $^
 db.o:
 	$(CC) $(BUILD_CFLAGS) $(CFLAGS) -o $@ -c ../src/db.cc
 mysql.o:mysql.c
