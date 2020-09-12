@@ -7,10 +7,22 @@ cd /home/rd/Desktop/DMDBMS
 
 ```
 open `DM Service Viewer` as   /home/rd/dmdbms/tool/dmservice.sh
-start DM Server
+start DmServiceDMSERVER
+add path for cmd
+```
+sudo vim /etc/profile
+PATH=/home/rd/dmdbms/bin:$PATH
+export PATH
+source /etc/profile
+```
 test you dm server
 ```
 disql SYSDBA/SYSDBA@localhost:5236
+create table t(a int,b int,c int);
+insert into t values(1,2,3);
+insert into t values(11,22,33);
+commit;
+quit
 ```
 
 ## 1.2 setup unixODBC
@@ -62,11 +74,11 @@ TCP_PORT 	= 5236
 add dm libdodbc.so to LD_LIBRARY_PATH
 sudo vim /etc/profile
 ```
-LD_LIBRARY_PATH=/home/rd/dmdbms/bin:/usr/local/lib:$LD_LIBRARY_PATH
+LD_LIBRARY_PATH=/home/rd/dmdbms/bin:$LD_LIBRARY_PATH
 ```
 add libodbc.so to LD_LIBRARY_PATH
 ```
-LD_LIBRARY_PATH=/home/rd/dmdbms/bin:/usr/local/lib:$LD_LIBRARY_PATH
+LD_LIBRARY_PATH=/home/rd/dmdbms/bin:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH
 ```
 and run
