@@ -55,7 +55,7 @@ mkdir build
 cd build
 ../configure --without-expat
 cd ..
-autoreconf -ivf 
+autoreconf -ivf
 cd build
 make
 cd log4c-1.2.4/build/src/log4c/.libs
@@ -65,7 +65,7 @@ cd obj
 ar -x liblog4c.a
 ```
 
-# 2. env for dynamic lib  
+# 4. env for dynamic lib  
 
 ```
 # add dynamic link library path for runtime
@@ -74,7 +74,7 @@ LD_LIBRARY_PATH=/a/b/c:$LD_LIBRARY_PATH
 # add dynamic link library path for compile time
 LIBRARY_PATH=$LD_LIBRARY_PATH:$LIBRARY_PATH
 
-# add include header file path 
+# add include header file path
 CPLUS_INCLUDE_PATH=/a/b/c:$CPLUS_INCLUDE_PATH
 
 C_INCLUDE_PATH=$CPLUS_INCLUDE_PATH
@@ -84,7 +84,7 @@ export LIBRARY_PATH;
 export CPLUS_INCLUDE_PATH;
 export C_INCLUDE_PATH;
 ```
-# 3. use sqlite with c in ubuntu
+# 5. use sqlite with c in ubuntu
 
 ```
 apt-get install sqlite sqlite3
@@ -114,7 +114,7 @@ int sqlite3_exec(
 );
 ```
 
-# 4. LT code 
+# 6. LT code
 
 LT codes  
 Conference Paper in Foundations of Computer Science, 1975., 16th Annual Symposium on · January 2002  
@@ -127,12 +127,12 @@ luby@digitalfountain.com
 是第一个最接近完善的抹除码(erasure correcting codes)的实用涌泉码(fountain codes），  
 由Michael Luby在1998年发明并于2002年发表。
 
-#5. dm db
+# 7. dm db
 ```
 https://blog.csdn.net/cddchina/article/details/80733303?utm_medium=distribute.pc_relevant_bbs_down.none-task--2~all~sobaiduend~default-1.nonecase&depth_1-utm_source=distribute.pc_relevant_bbs_down.none-task--2~all~sobaiduend~default-1.nonecase
 ```
 
-# 6. SOCI
+# 8. SOCI
 ```
 http://www.cppcns.com/shujuku/mysql/124269.html
 https://www.jianshu.com/p/66ac4e90c602
