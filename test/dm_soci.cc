@@ -19,7 +19,7 @@ int main()
 {
 	connection_parameters parameters("odbc", "DSN=dm");
 	parameters.set_option(odbc_option_driver_complete, "0" /* SQL_DRIVER_NOPROMPT */);
-	session sql(odbc, "filedsn=/etc/odbc.ini");
+	session sql(odbc, "filedsn=/usr/local/etc//odbc.ini");
 	cout << "has connected!!"<<endl;
 	rowset<row> rs = (sql.prepare << "select a, b, c from sysdba.t");
 
