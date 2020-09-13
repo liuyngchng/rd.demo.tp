@@ -16,7 +16,7 @@ _db_test:db_test.o db.o common.o
 _dm_odbc:dm_odbc.o
 	$(CC) -o $@ $^ -L/usr/lib -lodbc
 _mysql:mysql.o
-	$(CC) -I/usr/local/mysql/include -I/usr/include/mysql  -L/usr/local/mysql/lib -L/usr/lib/x86_64-linux-gnu -o $@ $< -lmysqlclient
+	$(CC)  -o $@ $^ -I/usr/local/mysql/include -I/usr/include/mysql  -L/usr/local/mysql/lib  -lmysqlclient
 _timestamp_test:timestamp.o
 	$(CC) ${CFLAGS} ${BUILD_CFLAGS} -o $@ $< timestamp_test.cc
 
