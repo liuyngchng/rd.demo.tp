@@ -8,7 +8,7 @@ LINK_FLAG=-L../lib
 _dm_soci:dm_soci.cc
 	$(CC) ${CFLAGS} -o $@ $< -I../lib/soci/include/ -L../lib/soci -lsoci_odbc -lsoci_core -lodbc -ldl 
 _mysql_soci:mysql_soci.cc
-	$(CC) ${CFLAGS} -o $@ $< -I../lib/soci/include/ -I/usr/include/mysql -L../lib/soci/ -lsoci_mysql -lsoci_core -lmysqlclient -ldl 
+	$(CC) ${CFLAGS} -o $@ $< -I../lib/soci/include/ -I /usr/local/mysql/include -I/usr/include/mysql -L../lib/soci/ -L/usr/local/mysql/lib -lsoci_mysql -lsoci_core -lmysqlclient -ldl 
 _sqlite_test:sqlite_test.o 
 	$(CC) $(BUILD_CFLAGS) ${LINK_FLAG} -o $@ $< -lsqlite3 -ldl -lpthread
 _db_test:db_test.o db.o common.o
