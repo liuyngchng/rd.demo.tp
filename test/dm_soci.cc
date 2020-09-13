@@ -1,6 +1,6 @@
 /**
- * export ODBCINI=/etc/odbc.ini
- * export ODBCSYSINI=/etc 
+ * export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/rd/workspace/soci/build/lib
+ * export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/rd/dmdbms/bin/
  * odbcinst -j
  */
 #include "soci/soci.h"
