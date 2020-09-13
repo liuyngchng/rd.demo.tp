@@ -104,9 +104,10 @@ you can see
 ```
 if you see
 `Can't open lib '/home/rd/dmdbms/bin/libdodbc.so' : file not found`,
-but the so file really exit, that is because LD_LIBRARY_PATH config
-for dm lib and odbc lib is not valid or haven't be activated.
-check and fix the problem,you canb run
+but the so file really exit, that is because of LD_LIBRARY_PATH config
+for dmdb lib and odbc lib is not valid or haven't be activated.
+check and fix the problem,you can run
 ```
 ldd theSoCalledMissedSoFile.so
 ```
+to check what's wrong.
