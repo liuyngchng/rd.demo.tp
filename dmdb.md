@@ -6,14 +6,16 @@ cd dameng_x86
 cd /home/rd/Desktop/DMDBMS
 
 ```
-open `DM Service Viewer` as   /home/rd/dmdbms/tool/dmservice.sh
-start DmServiceDMSERVER
 add path for cmd
 ```
 sudo vim /etc/profile
 PATH=/home/rd/dmdbms/bin:$PATH
 export PATH
 source /etc/profile
+```
+start DmServiceDMSERVER, to run
+```
+DmServiceDMSERVER start
 ```
 test you dm server
 ```
