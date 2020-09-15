@@ -1,10 +1,12 @@
-all: _md5test _dm_odbc _file_path_test _timestamp_test _db_test _sqlite_test _mysql _dm_soci _mysql_soci
+all: _md5test _dm_odbc _file_path_test _timestamp_test _db_test _sqlite_test _mysql _dm_soci _mysql_soci _sqlite_soci
 
 CC=g++
 CFLAGS=-g -Wall
 BUILD_CFLAGS= -I../lib -I../src 
 LINK_FLAG=-L../lib
 
+_sqlite_soci:sqlite_soci.cc
+	$(CC) ${CFLAGS} -o $@ $< -I../lib/soci/include/ -I../lib -L../lib/soci/ -lsoci_core -lsoci_sqlite3 -ldl
 _dm_soci:dm_soci.cc
 	$(CC) ${CFLAGS} -o $@ $< -I../lib/soci/include/ -L../lib/soci -lsoci_odbc -lsoci_core -lodbc -ldl 
 _mysql_soci:mysql_soci.cc

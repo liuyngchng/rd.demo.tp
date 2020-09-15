@@ -3,12 +3,12 @@ g++ -g -Wall -o _mysql_soci mysql_soci.cc -I../lib/soci/include/ -I /usr/local/m
 */
 #include "soci/soci.h"
 #include "soci/mysql/soci-mysql.h"
-#include<iostream>
-#include<istream>
-#include<ostream>
-#include<string>
-#include<exception>
-#include<unistd.h>
+#include <iostream>
+#include <istream>
+#include <ostream>
+#include <string>
+#include <exception>
+#include <unistd.h>
    
 using namespace std;
 using namespace soci;
