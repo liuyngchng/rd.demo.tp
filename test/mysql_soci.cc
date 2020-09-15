@@ -1,6 +1,6 @@
 /*
 g++ -g -Wall -o _mysql_soci mysql_soci.cc -I../lib/soci/include/ -I /usr/local/mysql/include -I/usr/include/mysql -L../lib/soci/ -L/usr/local/mysql/lib -lsoci_mysql -lsoci_core -lmysqlclient -ldl
-create table person(`id` int null, `first_name` varchar(32) null, `last_name` varchar(32) null, `gender` varchar(32) null);
+create table person(id int null, first_name varchar(32) null, last_name varchar(32) null, gender varchar(32) null);
 */
 
 #include "soci/soci.h"
