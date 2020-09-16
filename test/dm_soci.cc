@@ -102,7 +102,7 @@ int main()
         "values(:id, :first_name, :last_name)", use(p);
 	cout << "insert OK" << endl;	
 	Person p1;
-    sql << "select id, first_name, last_name from person limit 1", into(p1);
+    sql << "select id, first_name, last_name,gender from person limit 1", into(p1);
     assert(p1.id == 1);
     assert(p1.firstName + p.lastName == "PatSmith");
     assert(p1.gender == "unknown");
