@@ -12,58 +12,11 @@ create table person(id int null, first_name varchar(32) null, last_name varchar(
 #include <exception>
 #include <unistd.h>
 #include <assert.h>
-   
+#include "person.h"   
+
 using namespace std;
 using namespace soci;
 
-struct Person
-{
-    int id;
-    string firstName;
-    string lastName;
-    string gender;
-};
-
-namespace soci
-{
-    template<>
-    struct type_conversion<Person>
-    {
-        typedef values base_type;
-
-        static void from_base(values const & v, indicator /* ind */, Person & p)
-        {
-            p.id = v.get<int>("id");
-            p.firstName = v.get<std::string>("first_name");
-            p.lastName = v.get<std::string>("last_name");
-
-            // p.gender will be set to the default value "unknown"
-            // when the column is null:
-            p.gender = v.get<std::string>("gender", "unknown");
-    
-            // alternatively, the indicator can be tested directly:
-            // if (v.indicator("GENDER") == i_null)
-            // {   
-            //     p.gender = "unknown";
-            // }
-            // else
-            // {   
-            //     p.gender = v.get<std::string>("GENDER");
-            // }
-        }
-        
-        static void to_base(const Person & p, values & v, indicator & ind)
-        {
-            v.set("id", p.id);
-            v.set("first_name", p.firstName);
-            v.set("last_name", p.lastName);
-            v.set("gender", p.gender, p.gender.empty() ? i_null : i_ok);
-            ind = i_ok;
-        }
-    };
-}
-
-   
 int main() 
 {
 	//multithread
@@ -94,15 +47,16 @@ int main()
 	int id = 1;
 	string name;
 	string value;
-	sql << "select name, value from test.a where id =" << id, into(name), into(value);
+	sql << "select name, value from a where id =" << id, into(name), into(value);
 	cout << "name:" << name << ", value:" << value << endl;
-
+	sql << "delete from a;";
 	cout << "use demo" << endl;
 	int id1 = 110;
 	string name1 = "my name1";
 	string value1 = "my value1";
 	sql << "insert into a (id, name, value) values (:id, :name, :value)", use(id1), use(name1), use(value1); 
-
+	
+	sql << "delete from person;";
 	cout << "object relation mapping demo" << endl;
 	Person p;
 	p.id = 1;

@@ -12,57 +12,10 @@
 #include <exception>
 #include <unistd.h>
 #include <assert.h>
+#include "person.h"
    
 using namespace std;
 using namespace soci;
-
-struct Person
-{
-    int id;
-    string firstName;
-    string lastName;
-    string gender;
-};
-
-namespace soci
-{
-    template<>
-    struct type_conversion<Person>
-    {
-        typedef values base_type;
-
-        static void from_base(values const & v, indicator /* ind */, Person & p)
-        {
-            p.id = v.get<int>("id");
-            p.firstName = v.get<std::string>("first_name");
-            p.lastName = v.get<std::string>("last_name");
-
-            // p.gender will be set to the default value "unknown"
-            // when the column is null:
-            p.gender = v.get<std::string>("gender", "unknown");
-
-            // alternatively, the indicator can be tested directly:
-            // if (v.indicator("GENDER") == i_null)
-            // {   
-            //     p.gender = "unknown";
-            // }
-            // else
-            // {   
-            //     p.gender = v.get<std::string>("GENDER");
-            // }
-        }
-
-        static void to_base(const Person & p, values & v, indicator & ind)
-        {
-            v.set("id", p.id);
-            v.set("first_name", p.firstName);
-            v.set("last_name", p.lastName);
-            v.set("gender", p.gender, p.gender.empty() ? i_null : i_ok);
-            ind = i_ok;
-        }
-    };
-}
-
    
 int main() 
 {
@@ -82,7 +35,7 @@ int main()
 	//session sql(odbc, "filedsn=../config/test-mssql.dsn");
 	//cout << "db connected!!"<<endl;
 	session sql(pool);
-	rowset<row> rs = (sql.prepare << "select a, b, c from sysdba.t");
+	rowset<row> rs = (sql.prepare << "select a, b, c from t");
 
 	// iteration through the resultset:
 	for (rowset<row>::const_iterator it = rs.begin(); it != rs.end(); ++it) {
@@ -92,7 +45,7 @@ int main()
 		cout << "b: " << row.get<int>(1) << "\t|";
 		cout << "c: " << row.get<int>(2) << endl;
     }
-
+	sql << "delete from person;";
 	cout << "object relation mapping demo" << endl;
     Person p;
     p.id = 1;
