@@ -34,9 +34,16 @@ tar -zxf unixODBC-2.3.9.tar.gz
 cd unixODBC-2.3.9/
 ./configure
 make
-make install
+sudo make install
 ```
-run
+add so to lib path
+```
+sudo vim /etc/profile
+LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH
+sudo ldconfig
+```
+then, run
 ```
 odbcinst -j
 ```
@@ -75,10 +82,6 @@ TCP_PORT 	= 5236
 ## 1.4 config LD_LIBRARY_PATH
 add dm libdodbc.so to LD_LIBRARY_PATH
 sudo vim /etc/profile
-```
-LD_LIBRARY_PATH=/home/rd/dmdbms/bin:$LD_LIBRARY_PATH
-```
-add libodbc.so to LD_LIBRARY_PATH
 ```
 LD_LIBRARY_PATH=/home/rd/dmdbms/bin:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH
