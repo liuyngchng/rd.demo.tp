@@ -47,7 +47,7 @@ void init_db(sqlite3 **db)
 	}
 	connection_parameters parameters("odbc", "DSN=dm");
     parameters.set_option(odbc_option_driver_complete, "0" /* SQL_DRIVER_NOPROMPT */);
-	for (size_t i = 0; i != pool_size; ++i) {
+	for (size_t i = 0; i <= pool_size; ++i) {
         session & sql = pool.at(i);
         sql.open(parameters);
     }
@@ -70,10 +70,13 @@ bool get_file_by_md5(char *md5, struct file_rcd &rs)
 	return true;
 }
 
+/**
+ * get file info by md5 and file name.
+ * the file with same md5 may have different name.
+ */
 bool get_file_by_md5_name(char *md5, char *name,  struct file_rcd &rs)
 {
 	init_db(NULL);
-	char *err_msg = NULL;
 	string sql_base = "select id, app_id,  name, md5, size, slice_size, "
 		"slice_total, slice_snd, path, create_time from file_info where del=0 and md5=";
 	string md5_str = md5;
@@ -84,6 +87,9 @@ bool get_file_by_md5_name(char *md5, char *name,  struct file_rcd &rs)
 	return true; 
 }
 
+/**
+ * get file info by file_id in db and file name.
+ */
 bool get_file_by_id_name(int file_id, char *name,  struct file_rcd &rs)
 {
 	init_db(NULL);
@@ -95,6 +101,10 @@ bool get_file_by_id_name(int file_id, char *name,  struct file_rcd &rs)
 
 	return true;
 }
+
+/**
+ * delete file info by update field 'del' as 0.
+ */
 bool delete_file_by_md5(char *md5)
 {
 	init_db(NULL);
@@ -106,6 +116,9 @@ bool delete_file_by_md5(char *md5)
 	return true;
 }
 
+/**
+ * save file info in db.
+ */
 bool save_file_info(struct file_rcd &rs)
 {
 	init_db(NULL);
@@ -117,6 +130,9 @@ bool save_file_info(struct file_rcd &rs)
 	return true;
 }
 
+/**
+ * update slice no by file id and file name.
+ */
 int update_slice_no_by_file_id_name(int file_id, char *name, int slice_snd)
 {  
 	struct file_rcd rs;
@@ -126,8 +142,15 @@ int update_slice_no_by_file_id_name(int file_id, char *name, int slice_snd)
     return 0;
 }
 
+/**
+ * update file info according to file_rcd struct info.
+ * the file_rcd.id must not be null.
+ */
 bool update_file_info(struct file_rcd &rs)
 {
+    if(rs.id == 0) {
+        return false;    
+    }
 	init_db(NULL);
 	string sql_str = "update 'file_info' set app_id=:app_id , file_id=:file_id, name=:name, "
         "size=:size, path=:path, slice_size=:slice_size, slice_total=:slice_total," 
@@ -137,7 +160,9 @@ bool update_file_info(struct file_rcd &rs)
 	return true;
 }
 
-
+/**
+ * get peer info from db to check whether the network is ok between the peers.
+ */
 int get_peer_info(char *source, char *target)
 {
 	init_db(NULL); 
@@ -150,6 +175,9 @@ int get_peer_info(char *source, char *target)
 	return 0;
 }
 
+/**
+ * update peer info between the source and target.
+ */
 int update_peer_info(char *source, char *target, bool is_connected)
 {
 	init_db(NULL);
@@ -163,6 +191,9 @@ int update_peer_info(char *source, char *target, bool is_connected)
 	return 0;
 }
 
+/**
+ * insert peer info in database.
+ */
 bool insert_peer_info(char *source, char *target, bool ping_ok)
 {
 	init_db(NULL);
@@ -176,7 +207,9 @@ bool insert_peer_info(char *source, char *target, bool ping_ok)
 	return true;
 }
 
-//save task info into database.
+/**
+ * save task info into database.
+ */
 bool save_task_info(struct task_rcd &rs)
 {
 	init_db(NULL);
@@ -190,13 +223,12 @@ bool save_task_info(struct task_rcd &rs)
 	return true;
 }
 
-//update task info in db.
+/**
+ * update task info in db.
+ */
 bool update_task_info(struct task_rcd &rs)
 {
-	log_init();
-	sqlite3 *db = NULL;
-	init_db(&db);
-	char *err_msg = NULL;
+	init_db(NULL);
 	string sql_str = "update task_info set app_id =:app_id, data_size=:data_size, " 
 		"target=:target, zone=:zone, file_id=:file_id," 
 		"priority=:priority,status=:status where id =:id" ;
@@ -205,7 +237,9 @@ bool update_task_info(struct task_rcd &rs)
 	return true;
 }
 
-//delete task info in db logically.
+/**
+ * delete task info in db logically.
+ */
 bool update_task_info(int id)
 {
 	init_db(NULL);
@@ -219,11 +253,12 @@ bool update_task_info(int id)
 	return true;
 }
 
-//get task info by uid.
+/**
+ * get the latest task info of the user by uid.
+ */
 int get_task_by_uid(struct task_rcd &rs, char *uid)
 {
 	init_db(NULL); 
-	char *err_msg = NULL;
 	string sql_base = "select id, app_id, data_size, uid, target, zone, create_time, "
 		"interrupt_time, restart_time, cancel_time, file_id, priority, progress, "
 		"op_uid, op_type, status from task_info where 1=1 ";
@@ -234,7 +269,9 @@ int get_task_by_uid(struct task_rcd &rs, char *uid)
 	return 0;	
 }
 
-//get topology list.
+/**
+ * get topology list.
+ */
 int get_topo_list(list<struct topo_rcd> &rs_list)
 {
 	init_db(NULL);
@@ -243,24 +280,26 @@ int get_topo_list(list<struct topo_rcd> &rs_list)
     rowset<row> rs = (sql.prepare << sql_str);
     for (rowset<row>::const_iterator it = rs.begin(); it != rs.end(); ++it) {
         const row& row = *it;
-		struct topo_rcd rs;
-        rs.id = row.get<int>(0);
-        rs.source = row.get<string>(1).c_str();
-        rs.target = row.get<string>(2).c_str();
-        rs.loss = row.get<int>(3);
-        rs.is_connected = row.get<bool>(4);
-        rs.available_bw = row.get<int>(5);
-        rs.capacity_bw = row.get<int>(6);
-        rs.latency = row.get<int>(7);
-        rs.create_time = row.get<string>(8).c_str();
-        rs.update_time = row.get<string>(9).c_str();
-        rs_list.push_back(rs);
+		struct topo_rcd t;
+        t.id = row.get<int>(0);
+        t.source = row.get<string>(1).c_str();
+        t.target = row.get<string>(2).c_str();
+        t.loss = row.get<int>(3);
+        t.is_connected = row.get<bool>(4);
+        t.available_bw = row.get<int>(5);
+        t.capacity_bw = row.get<int>(6);
+        t.latency = row.get<int>(7);
+        t.create_time = row.get<string>(8).c_str();
+        t.update_time = row.get<string>(9).c_str();
+        rs_list.push_back(t);
 	} 
 	return 0;
 	
 }
 
-//save topology info.
+/**
+ * save topology info.
+ */
 bool save_topo_info(struct topo_rcd &rs)
 {
 	init_db(NULL); 
@@ -274,6 +313,9 @@ bool save_topo_info(struct topo_rcd &rs)
 //update topology info.
 bool update_topo_info(struct topo_rcd &rs)
 {
+    if (rs.id == 0){
+        return false;
+    }
 	init_db(NULL);
 	string sql_str = "update 'topo_info' set "
 	    "source=:source, target=:target,loss=:loss, is_connected=:is_connected,"
@@ -284,12 +326,17 @@ bool update_topo_info(struct topo_rcd &rs)
 	return true;
 }
 
-//get topology detail with topo from "source" to "target" 
+/**
+ * get topology detail with topo from "source" to "target"
+ */
 void get_topo_info(char *source, char *target, struct topo_rcd &rs)
 {
-	init_db(NULL); 
+	init_db(NULL);
+    string s_str = source;
+    string t_str = target;
 	string sql_str = "select id, source, target, loss, available_bw, capacity_bw,"
-		"latency, create_time, update_time from topo_info where is_connected = 1 limit 1";
+		"latency, create_time, update_time from topo_info where is_connected = 1"
+        "and source ='" + s_str + "' and target='" + t_str + "' limit 1";
     session sql(pool);
     sql << sql_str, into(rs);
 }
@@ -317,6 +364,9 @@ int get_task_file_receiver(int task_id, int file_id, char receiver_list[][32])
 	return 0;
 }
 
+/**
+ * get task status by task id.
+ */
 int get_task_status(int task_id)
 {
 	init_db(NULL); 
@@ -331,6 +381,9 @@ int get_task_status(int task_id)
 	return t.status;
 }
 
+/**
+ * get file percent of have being transported.
+ */
 int get_file_percent(int file_id)
 {	
 	init_db(NULL); 
@@ -345,6 +398,9 @@ int get_file_percent(int file_id)
 	return f.progress;
 }
 
+/**
+ * get the last data send rate.
+ */
 int get_last_task_data_rate()
 {	
 	init_db(NULL); 
@@ -359,9 +415,12 @@ int get_last_task_data_rate()
 		return -1;
 	sql_str = "select data_rate from task_info where id = :id";
     sql << sql_str, use(t), into(t);
-	return t1.data_rate;
+	return t.data_rate;
 }
 
+/**
+ * save data send rate in db.
+ */
 bool save_data_rate(int task_id, int data_rate)
 {	
 	init_db(NULL);
@@ -378,6 +437,9 @@ bool save_data_rate(int task_id, int data_rate)
 	return true;
 }
 
+/**
+ * a integer to string converter util.
+ */
 static string itoa(int i)
 {
 	char s[32] = {0};
