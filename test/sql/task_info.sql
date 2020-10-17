@@ -17,5 +17,6 @@ CREATE TABLE "task_info"
 "op_uid" VARCHAR(128),
 "op_type" INTEGER,
 "status" INTEGER,
+"data_rate" INTEGER,
 "del" INTEGER DEFAULT 0) ;
 

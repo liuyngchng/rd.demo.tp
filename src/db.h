@@ -27,6 +27,7 @@ struct file_rcd
 	char 	create_time[20];
 	char 	update_time[20];
 	int		del;					// logic delete flag , 0:not delete, 1:deleted
+    int     percent;                // unit:% , percent of file sent.
 };
 
 /**
@@ -52,6 +53,7 @@ struct task_rcd
     int		op_type;
     int		status;					// 0:init, 1:start, 2:interrupt,3:stop,4:resume,5:finish, 6:write_over，7:delivery_over
 	int 	del;					// logic delete flag, 0: not delete, 1:deleted.
+    int     data_rate;              // average data send rate on task level
 };
 
 /**
@@ -62,8 +64,8 @@ struct topo_rcd
 	int		id;
 	char	*source;
 	char 	*target;
-	float	loss;					//packet loss =0.1%, loss=0.1;
-	bool	is_connected;			// is_connected = 1 if ping OK;
+	int	    loss;					//packet loss =0.1%, loss=1; float is not ok in ORM soci
+	int	    is_connected;			// is_connected = 1 if ping OK; bool is not ok in ORM soci
 	int		available_bw;			// unit = Mbps;
 	int		capacity_bw;			// unit = Mbps;
 	int		latency;				// unit = ms;

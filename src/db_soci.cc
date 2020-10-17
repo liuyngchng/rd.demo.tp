@@ -2,6 +2,8 @@
  * export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/rd/workspace/soci/build/lib
  * export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/rd/dmdbms/bin/
  * odbcinst -j
+ * g++ -g -fPIC -Wall  -I../lib -I. -I../lib/soci/include  db_soci.cc -c -o db_soci.o
+ * g++ db_soci db_soci.o -lsoci_core -lsoci_odbc -lpthread -ldl
  */
 #include "soci/soci.h"
 #include "soci/odbc/soci-odbc.h"
@@ -18,6 +20,11 @@
 
 using namespace std;
 using namespace soci;
+
+/**
+ * declaration.
+ */
+static string itos(int i);
 
 /**
  * db pool size.
@@ -66,7 +73,7 @@ bool get_file_by_md5(char *md5, struct file_rcd &rs)
 	string md5_str = md5;
 	string sql_str = sql_base + "'" + md5_str + "' limit 1";
     session sql(pool);
-    sql << sql_str, into rs;
+    sql << sql_str, into(rs);
 	return true;
 }
 
@@ -83,7 +90,7 @@ bool get_file_by_md5_name(char *md5, char *name,  struct file_rcd &rs)
 	string name_str = name;
 	string sql_str = sql_base + "'" + md5_str + "' and name='" + name_str + "' limit 1";
 	session sql(pool);
-    sql << sql_str, into rs;
+    sql << sql_str, into(rs);
 	return true; 
 }
 
@@ -95,7 +102,7 @@ bool get_file_by_id_name(int file_id, char *name,  struct file_rcd &rs)
 	init_db(NULL);
 	string sql_base = "select id, app_id, file_id,  name, md5, size, path, slice_size, "
 		"slice_total, slice_snd, create_time from file_info where del=0 and file_id=";
-	string fid_str = itoa(file_id);
+	string fid_str = itos(file_id);
 	string name_str = name;
 	string sql_str = sql_base + fid_str + " and name='" + name_str + "' limit 1";
 
@@ -122,7 +129,7 @@ bool delete_file_by_md5(char *md5)
 bool save_file_info(struct file_rcd &rs)
 {
 	init_db(NULL);
-	string sql_base = "insert into 'file_info'(app_id, name, md5, size, "
+	string sql_str = "insert into 'file_info'(app_id, name, md5, size, "
 		"slice_size, slice_total,slice_snd, path) VALUES "
         "(:app_id, :name, :md5, :size, :slice_size, :slice_total, :slice_snd, :path)"; 
     session sql(pool);
@@ -185,7 +192,6 @@ int update_peer_info(char *source, char *target, bool is_connected)
 	string s_str = source;
 	string t_str = target;
 	string sql_str = sql_base + "source ='" + s_str + "' and target='" + t_str +"' limit 1";
-		"sql=%s, at %d in %s ",
     session sql(pool);
     sql << sql_str;
 	return 0;
@@ -244,9 +250,7 @@ bool update_task_info(int id)
 {
 	init_db(NULL);
 	string sql_base = "update task_info set ";
-	char id_a[20] = {0};
-	itoa(id, id_a);
-	string id_str = id_a;
+	string id_str = itos(id);
 	string sql_str = sql_base + "del = 1 where id = " + id_str + " limit 1";
     session sql(pool);
     sql << sql_str;
@@ -277,20 +281,21 @@ int get_topo_list(list<struct topo_rcd> &rs_list)
 	init_db(NULL);
 	string sql_str = "select id, source, target, loss, is_connected, available_bw, capacity_bw,"
 		"latency, create_time, update_time where is_connected = 1 limit 100";
+    session sql(pool);
     rowset<row> rs = (sql.prepare << sql_str);
     for (rowset<row>::const_iterator it = rs.begin(); it != rs.end(); ++it) {
         const row& row = *it;
 		struct topo_rcd t;
         t.id = row.get<int>(0);
-        t.source = row.get<string>(1).c_str();
-        t.target = row.get<string>(2).c_str();
+        t.source = const_cast<char*>(row.get<string>(1).c_str());
+        t.target = const_cast<char*>(row.get<string>(2).c_str());
         t.loss = row.get<int>(3);
         t.is_connected = row.get<bool>(4);
         t.available_bw = row.get<int>(5);
         t.capacity_bw = row.get<int>(6);
         t.latency = row.get<int>(7);
-        t.create_time = row.get<string>(8).c_str();
-        t.update_time = row.get<string>(9).c_str();
+        t.create_time = const_cast<char*>(row.get<string>(8).c_str());
+        t.update_time = const_cast<char*>(row.get<string>(9).c_str());
         rs_list.push_back(t);
 	} 
 	return 0;
@@ -303,7 +308,7 @@ int get_topo_list(list<struct topo_rcd> &rs_list)
 bool save_topo_info(struct topo_rcd &rs)
 {
 	init_db(NULL); 
-	string sql_str = "insert into 'topo_info'(source, target, loss, is_connected, available_bw, capacity_bw, latency, type) VALUES (";
+	string sql_str = "insert into 'topo_info'(source, target, loss, is_connected, available_bw, capacity_bw, latency, type) VALUES ("
 	    ":sql_base, :source, :target, :loss, :is_connected, :available_bw, :capacity_bw, :latency, :type)";
     session sql(pool);
     sql << sql_str, into(rs);
@@ -348,8 +353,8 @@ int get_task_file_receiver(int task_id, int file_id, char receiver_list[][32])
 {
 	init_db(NULL); 
 	string sql_base = "select id, file_id, target from task_info where id = ";
-	string task_id_str = itoa(task_id);
-	string file_id_str = itoa(file_id);
+	string task_id_str = itos(task_id);
+	string file_id_str = itos(file_id);
 	string sql_str = sql_base + task_id_str + " and file_id = " + file_id_str;
     session sql(pool);
     rowset<row> rs = (sql.prepare << sql_str);
@@ -357,7 +362,7 @@ int get_task_file_receiver(int task_id, int file_id, char receiver_list[][32])
     // iteration through the resultset:
     for (rowset<row>::const_iterator it = rs.begin(); it != rs.end(); ++it) {
         const row& row = *it;
-        string target = row.get<string>(2);
+        char *target = const_cast<char*>(row.get<string>(2).c_str());
         char search[2] = ";";
         split_str(target, search, receiver_list);
     }
@@ -371,9 +376,7 @@ int get_task_status(int task_id)
 {
 	init_db(NULL); 
 	string sql_base = "select status from task_info where id = ";
-	char task_id_a[16] = {0};
-	itoa(task_id, task_id_a);
-	string task_id_str = task_id_a;
+	string task_id_str = itos(task_id);
 	string sql_str = sql_base + task_id_str + " limit 1";
     session sql(pool);
     struct task_rcd t;
@@ -387,15 +390,13 @@ int get_task_status(int task_id)
 int get_file_percent(int file_id)
 {	
 	init_db(NULL); 
-	string sql_base = "select progress from file_info where id = ";
-	char file_id_a[16] = {0};
-	itoa(file_id, file_id_a);
-	string file_id_str = file_id_a;
+	string sql_base = "select percent from file_info where id = ";
+	string file_id_str = itos(file_id);
 	string sql_str = sql_base + file_id_str + " limit 1";
     session sql(pool);
     struct file_rcd f;
     sql << sql_str, into(f);
-	return f.progress;
+	return f.percent;
 }
 
 /**
@@ -405,9 +406,6 @@ int get_last_task_data_rate()
 {	
 	init_db(NULL); 
 	string sql_str = "select max(id) as id  from task_info";
-	sqlite3_get_table(db , sql.c_str(), &result, &row , &c , &err_msg);
-	int max_id = 0;
-	char max_id_c[32] = {0};
     session sql(pool);
     struct task_rcd t;
     sql << sql_str, into(t);
@@ -425,12 +423,8 @@ bool save_data_rate(int task_id, int data_rate)
 {	
 	init_db(NULL);
 	string sql_base = "update task_info set ";
-	char id_a[32] = {0};
-	itoa(task_id, id_a);
-	string id_str = id_a;
-	char data_r_c[32] = {0};
-	itoa(data_rate, data_r_c);
-	string data_r_s = data_r_c;
+	string id_str = itos(task_id);
+	string data_r_s = itos(data_rate);
 	string sql_str = sql_base + "data_rate = " + data_r_s + " where id = " + id_str + " limit 1";
     session sql(pool);
     sql << sql_str;
@@ -440,7 +434,7 @@ bool save_data_rate(int task_id, int data_rate)
 /**
  * a integer to string converter util.
  */
-static string itoa(int i)
+static string itos(int i)
 {
 	char s[32] = {0};
 	itoa(i, s);

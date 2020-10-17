@@ -1,3 +1,5 @@
+#ifndef _FILE_RCD_H_
+#define _FILE_RCD_H_
 #include "db.h"
 
 using namespace std;
@@ -25,9 +27,9 @@ namespace soci
             f.slice_total = v.get<int>("slice_total");
             f.slice_snd = v.get<int>("slice_snd");
             string create_time = v.get<string>("create_time");
-            strcpy(f.create_time, create_time.c_str()):
+            strcpy(f.create_time, create_time.c_str());
             string update_time = v.get<string>("update_time");
-            strcpy(f.update_time, update_time);
+            strcpy(f.update_time, update_time.c_str());
             f.del = v.get<int>("del");
         }
 
@@ -40,13 +42,12 @@ namespace soci
             v.set("name", name);
             string md5 = f.md5;
             v.set("md5", md5);
-            string size = f.size;
-            v.set("size", size);
+            v.set("size", f.size);
             string path  =  f.path;
             v.set("path", path);
             v.set("slice_size", f.slice_size);
-            v.set("slice_total", slice_total);
-            v.set("slice_snd", slice_snd);
+            v.set("slice_total", f.slice_total);
+            v.set("slice_snd", f.slice_snd);
             string create_time = f.create_time;
             v.set("create_time", create_time);
             string update_time = f.update_time;
@@ -55,3 +56,4 @@ namespace soci
         }
     };  
 }
+#endif

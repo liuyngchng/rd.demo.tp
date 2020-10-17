@@ -1,3 +1,5 @@
+#ifndef _TOPO_RCD_H_
+#define _TOPO_RCD_H_
 #include "db.h"
 
 using namespace std;
@@ -11,22 +13,22 @@ namespace soci
 
         static void from_base(values const & v, indicator /* ind */, topo_rcd &t)
         {
-            f.id = v.get<int>("id");
+            t.id = v.get<int>("id");
             string source = v.get<string>("source");
-            t.source = source.c_str();
+            t.source = const_cast<char*>(source.c_str());
             string target = v.get<string>("target");
-            t.target, target.c_str();
-            t.loss = v.get<float>("loss");
-            t.is_connected = v.get<bool>("is_connected");
+            t.target = const_cast<char*>(target.c_str());
+            t.loss = v.get<int>("loss");
+            t.is_connected = v.get<int>("is_connected");
             t.available_bw = v.get<int>("available_bw");
             t.capacity_bw = v.get<int>("capacity_bw");
-            t.lantency = v.get<int>("lantency");
+            t.latency = v.get<int>("latency");
             t.type = v.get<int>("type");
             string create_time = v.get<string>("create_time");
-            t.create_time = create_time.c_str():
+            t.create_time = const_cast<char*>(create_time.c_str());
             string update_time = v.get<string>("update_time");
-            t.update_time = update_time;
-            f.del = v.get<int>("del");
+            t.update_time = const_cast<char*>(update_time.c_str());
+            t.del = v.get<int>("del");
         }
 
         static void to_base(const topo_rcd &t, values &v, indicator & ind)
@@ -42,11 +44,12 @@ namespace soci
             v.set("capacity_bw", t.capacity_bw);
             v.set("latency", t.latency);
             v.set("type", t.type);
-            string create_time = f.create_time;
+            string create_time = t.create_time;
             v.set("create_time", create_time);
-            string update_time = f.update_time;
+            string update_time = t.update_time;
             v.set("update_time", update_time);
-            v.set("del", f.del);
+            v.set("del", t.del);
         }
     };  
 }
+#endif

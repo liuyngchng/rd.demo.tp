@@ -1,3 +1,5 @@
+#ifndef _TASK_RCD_H_
+#define _TASK_RCD_H_
 #include "db.h"
 
 using namespace std;
@@ -15,25 +17,25 @@ namespace soci
             t.app_id = v.get<int>("app_id");
             t.data_size = v.get<int>("data_size");
             string uid = v.get<string>("uid");
-            t.uid = uid.c_str();
+            t.uid = const_cast<char*>(uid.c_str());
             string target = v.get<string>("target");
-            t.target = target.c_str();
+            t.target = const_cast<char*>(target.c_str());
             t.zone = v.get<int>("zone");
             string create_time = v.get<string>("create_time");
-            t.create_time = create_time.c_str();
+            t.create_time = const_cast<char*>(create_time.c_str());
             string update_time = v.get<string>("update_time");
-            t.update_time = update_time.c_str();
-            string interrrupt_time = v.get<string>("interrupt_time");
-            t.interrupt_time = interrupt_time.c_str();
+            t.update_time = const_cast<char*>(update_time.c_str());
+            string interrupt_time = v.get<string>("interrupt_time");
+            t.interrupt_time = const_cast<char*>(interrupt_time.c_str());
             string restart_time = v.get<string>("restart_time");
-            t.restart_time = restart_time.c_str();
+            t.restart_time = const_cast<char*>(restart_time.c_str());
             string cancel_time = v.get<string>("cancel_time");
-            t.cancel_time = cancel_time.c_str();
+            t.cancel_time = const_cast<char*>(cancel_time.c_str());
             t.file_id = v.get<int>("file_id");
-            t.priotiry = v.get<int>("priority");
+            t.priority = v.get<int>("priority");
             t.progress = v.get<int>("progress");
             string op_uid = v.get<string>("op_uid");
-            t.op_uid = op_uid.c_str():
+            t.op_uid = const_cast<char*>(op_uid.c_str());
             t.op_type = v.get<int>("op_type");
             t.status = v.get<int>("status");
             t.del = v.get<int>("del");
@@ -48,7 +50,7 @@ namespace soci
             v.set("uid", uid);
             string target = t.target;
             v.set("target", target);
-            v.set("zone", t.zone)
+            v.set("zone", t.zone);
             string create_time = t.create_time;
             v.set("create_time", create_time);
             string update_time = t.update_time;
@@ -61,12 +63,13 @@ namespace soci
             v.set("cancel_time", cancel_time);
             v.set("file_id", t.file_id);
             v.set("priority", t.priority);
-            v.set("process", t.process);
+            v.set("progress", t.progress);
             string op_uid  =  t.op_uid;
             v.set("op_uid", op_uid);
             v.set("op_type", t.op_type);
             v.set("status", t.status);
-            v.set("del", f.del);
+            v.set("del", t.del);
         }
     };  
 }
+#endif

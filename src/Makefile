@@ -2,8 +2,8 @@ all:_server _client libagent.a
 
 CC=g++
 CFLAGS=-g -fPIC -Wall 
-INC_FLAG= -I../lib -I. 
-L_FLAG= -L../lib 
+INC_FLAG= -I../lib -I. -I../lib/soci/include 
+L_FLAG= -L../lib -L../lib/soci 
 DIR= $(shell pwd)
 BIN=../bin
 LIB=../lib
@@ -16,15 +16,15 @@ STACK=../stack
 
 C_BIN=test -d $(BIN) || mkdir -p $(BIN)
 
-OBJS=common.o stack_util.o agent.o ping.o db.o md5.o timestamp.o scheduler.o
+OBJS=common.o stack_util.o agent.o ping.o md5.o timestamp.o scheduler.o db_soci.o
 
 _server:server.o $(OBJS) _stack _log4c _sqlite
 	$(C_BIN)
-	$(CC) $(INC_FLAG) $(L_FLAG) $(CFLAGS) -o _server $< $(OBJS) -llog4c -lsqlite3 -ltp -lpthread -ldl 
+	$(CC) $(INC_FLAG) $(L_FLAG) $(CFLAGS) -o _server $< $(OBJS) -llog4c -lsqlite3 -ltp -lsoci_core -lsoci_odbc -lpthread -ldl 
 	cp _server $(BIN)/server
 _client:client.o $(OBJS) _stack _log4c _sqlite
 	$(C_BIN)
-	$(CC) $(INC_FLAG) $(L_FLAG) $(CFLAGS) -o _client $< $(OBJS) -llog4c -lsqlite3 -ltp -lpthread -ldl
+	$(CC) $(INC_FLAG) $(L_FLAG) $(CFLAGS) -o _client $< $(OBJS) -llog4c -lsqlite3 -ltp -lsoci_core -lsoci_odbc -lpthread -ldl
 	cp _client $(BIN)/client
 _stack:$(LIB)/libtp.a
 	test -e $<

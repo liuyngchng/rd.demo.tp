@@ -8,5 +8,5 @@ CREATE TABLE "topo_info"
 "available_bw" INTEGER,
 "capacity_bw" INTEGER,
 "latency" INTEGER,
-"TYPE" INTEGER,
+"type" INTEGER,
 PRIMARY KEY("id"));

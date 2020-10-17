@@ -12,5 +12,6 @@ CREATE TABLE "file_info"
 "md5" CHAR(32),
 "create_time" TIMESTAMP(6) DEFAULT CURRENT_TIME NOT NULL,
 "update_time" TIMESTAMP(6),
+"percent" INTEGER DEFAULT 0,
 "del" INTEGER DEFAULT 0,
 PRIMARY KEY("id"));
