@@ -5,7 +5,7 @@ using namespace std;
 namespace soci
 {
     template<>
-    struct type_conversion<Person>
+    struct type_conversion<file_rcd>
     {   
         typedef values base_type;
 
