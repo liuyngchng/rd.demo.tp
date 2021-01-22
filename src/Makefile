@@ -20,11 +20,11 @@ OBJS=common.o stack_util.o agent.o ping.o md5.o timestamp.o scheduler.o db_soci.
 
 _server:server.o $(OBJS) _stack _log4c _sqlite
 	$(C_BIN)
-	$(CC) $(INC_FLAG) $(L_FLAG) $(CFLAGS) -o _server $< $(OBJS) -llog4c -lsqlite3 -ltp -lsoci_core -lsoci_odbc -lpthread -ldl 
+	$(CC) $(INC_FLAG) $(L_FLAG) $(CFLAGS) -o $@ $< $(OBJS) -llog4c -lsqlite3 -ltp -lsoci_core -lsoci_odbc -lpthread -ldl 
 	cp _server $(BIN)/server
 _client:client.o $(OBJS) _stack _log4c _sqlite
 	$(C_BIN)
-	$(CC) $(INC_FLAG) $(L_FLAG) $(CFLAGS) -o _client $< $(OBJS) -llog4c -lsqlite3 -ltp -lsoci_core -lsoci_odbc -lpthread -ldl
+	$(CC) $(INC_FLAG) $(L_FLAG) $(CFLAGS) -o $@ $< $(OBJS) -llog4c -lsqlite3 -ltp -lsoci_core -lsoci_odbc -lpthread -ldl
 	cp _client $(BIN)/client
 _stack:$(LIB)/libtp.a
 	test -e $<
