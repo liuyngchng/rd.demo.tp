@@ -10,3 +10,5 @@ quit;
 CALL SP_TABLEDEF('SYSDBA', 'tableName');
 
 
+--- DM7查看数据库版本 ---
+select * from v$version;
