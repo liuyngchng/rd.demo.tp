@@ -24,3 +24,15 @@ SQL> start /a/b/c.sql
 -- 编辑SQL脚本 --
 SQL> edit /a/b/c.sql
 
+
+-- 查看表空间物理文件的名称及大小 --
+select t.name tablespace_name,t.id file_id,d.path file_name,d.total_size*sf_get_page_size()/1024/1024||'m' total_space from v$tablespace t, v$datafile d where t.id=d.group_id;
+
+-- 查看数据库实例信息 --
+select name inst_name from v$instance;
+
+-- 确定高负载的 SQL(慢查询) --
+select * from v$long_exec_sqls;
+
+
+select owner, table_name, tablespace_name from dba_tables where owner = 'sysdba';
